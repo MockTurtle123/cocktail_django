@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
-from .models import Cocktail
 from .forms import GetSelection
-import pandas as pd
+from .functions import *
 
 
 class NameList(generic.ListView):
@@ -34,28 +33,15 @@ class NameList(generic.ListView):
     def post(self, request):
         form = GetSelection(request.POST)
         if form.is_valid():
-            request.session['name'] = form.cleaned_data['name']
-            request.session['ingredient'] = form.cleaned_data['ingredient']
+            request.session['name_selected'] = form.cleaned_data['name']
+            request.session['ingredient_selected'] = form.cleaned_data['ingredient']
+
+        request.session['recipe'] = return_recipe(name=request.session['name_selected'])
 
         context = self.get_context_data()
         return render(request,'index.html', context=context)
 
 
-
-def update_cocktail_data(request):
-    """Load recipe data from json file"""
-    recipe_book_df = pd.read_json('recipes.json')
-    for index, row in recipe_book_df.iterrows():
-        Cocktail.objects.create(
-            name=row['name'],
-            glass=row['glass'],
-            garnish=row['garnish'],
-            ingredients=row['ingredients']
-        )
+def update(request):
+    update_cocktail_data()
     return render(request, 'update.html')
-
-
-# def index(request):
-#     cocktail_name = request.POST.get('choose_name', 'Alexander')
-#
-#     return render(request, 'index.html')

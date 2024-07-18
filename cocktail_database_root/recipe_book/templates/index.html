@@ -32,9 +32,14 @@
                     {% endfor %}
                 </select>
             </div>
-            <h3 class="mt-4 mb-4">recipe:</h3>
             <div class="form-group mb-4">
-                <p>Here's the recipe for {{ request.session.name }}</p>
+                <p>Here's the recipe for <b>{{ request.session.name_selected }}</b>:</p>
+                <ul>
+                    {% for row in request.session.recipe %}
+                    <li>{{ row }}</li>
+                    <br>
+                    {% endfor %}
+                </ul>
             </div>
         </form>
         {% endblock %}

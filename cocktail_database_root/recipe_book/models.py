@@ -7,6 +7,7 @@ class Cocktail(models.Model):
     glass = models.CharField(max_length=10)
     garnish = models.CharField(max_length=100)
     ingredients = models.JSONField()
+    preparation = models.CharField(max_length=500, default='')
 
     objects = models.Manager()
 
