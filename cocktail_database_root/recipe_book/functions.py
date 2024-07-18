@@ -1,4 +1,5 @@
 from .models import Cocktail
+from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 
 
@@ -36,9 +37,14 @@ def format_garnish(garnish):
     garnish_str: str = f"Usually garnished with {garnish.lower()}\n"
     return garnish_str
 
+
 def return_recipe(name):
     name = name
-    selection = Cocktail.objects.get(name=name)
+    try:
+        selection = Cocktail.objects.get(name=name)
+    except ObjectDoesNotExist:
+        selection = Cocktail.objects.get(name='Alexander')
+
     glass = selection.glass
     garnish = selection.garnish
     ingredients = selection.ingredients

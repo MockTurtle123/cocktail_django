@@ -13,9 +13,22 @@ class NameList(generic.ListView):
         context = super().get_context_data(**kwargs)
 
         name_list = []
-        for item in Cocktail.objects.order_by().values('name'):
-            if not item['name'] in name_list:
-                name_list.append(item['name'])
+        ingredient_selected = self.request.session['ingredient_selected']
+        if ingredient_selected:
+            name_list.clear()
+            for cocktail in Cocktail.objects.order_by().values():
+                try:
+                    for item in cocktail['ingredients']:
+                        if item['ingredient'] == ingredient_selected:
+                            name_list.append(cocktail['name'])
+                except KeyError:
+                    continue
+            print(name_list)
+
+        else:
+            for item in Cocktail.objects.order_by().values('name'):
+                if not item['name'] in name_list:
+                    name_list.append(item['name'])
 
         ingredient_list = []
         for item in Cocktail.objects.order_by().values('ingredients'):
