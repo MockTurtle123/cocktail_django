@@ -8,14 +8,17 @@
 </head>
 <body>
     <div class="container">
-        {% block content %}
         <h1 class="mt-4 mb-4">Cocktail Database</h1>
         <form method="post">
             {% csrf_token %}
             <div class="form-group mb-4">
                 <label for="name">Search by name:</label>
                 <select class="form-control" name="name" id="name">
-                    <option selected="selected" disabled>Available recipes:</option>
+                    {% if request.session.ingredient_selected %}
+                        <option selected="selected" disabled>Available recipes: (containing {{ request.session.ingredient_selected }})</option>
+                    {% else %}
+                        <option selected="selected" disabled>Available recipes: (Showing all)</option>
+                    {% endif %}
                     {% for name in name_list %}
                     <option>{{ name }}</option>
                     {% endfor %}
@@ -31,18 +34,30 @@
                         <option>{{ item }}</option>
                     {% endfor %}
                 </select>
+                <br>
+                <button class="btn btn-secondary mb-4" type="submit">Select</button>
+                {% if messages %}
+                <div class="alert alert-success">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             <div class="form-group mb-4">
-                <p>Here's the recipe for <b>{{ request.session.name_selected }}</b>:</p>
-                <ul>
-                    {% for row in request.session.recipe %}
-                    <li>{{ row }}</li>
-                    <br>
-                    {% endfor %}
-                </ul>
+                {% if request.session.name_selected %}
+                    <p>Here's the recipe for <b>{{ request.session.name_selected }}</b>:</p>
+                    <ul>
+                        {% for row in request.session.recipe %}
+                            <li>{{ row|safe }}</li>
+                            <br>
+                        {% empty %}
+                            <li>Select a recipe from the list above</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
         </form>
-        {% endblock %}
     </div>
 </body>
 </html>
